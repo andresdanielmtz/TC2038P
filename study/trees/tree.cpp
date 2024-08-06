@@ -66,7 +66,7 @@ Left -> Right -> Root
 
 Starts from the left, goes to the right leaf and finally to the root. After this it does NOT go to the root but to the right-most element on the tree.
 
-It's pretty weird. 
+It's pretty weird. Used to delete trees since it goes to the leafs first before going to the roots of it. 
 */
 
 void postorderTraversal(TreeNode *root) {
