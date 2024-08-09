@@ -87,15 +87,11 @@ int main() {
   std::vector<double> arr;
 
   for (std::string line; std::getline(std::cin, line);) {
-    if (index == 0) {
-      size_arr = index;
-    } else {
+    if (index != 0) {
       arr.push_back(std::stod(line));
-      std::cout << std::stod(line);
     }
     index++;
   }
-
   print_vector(arr);
 
   int arr_size = arr.size();
