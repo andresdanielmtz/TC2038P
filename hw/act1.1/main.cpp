@@ -1,31 +1,32 @@
-#include <iostream>
-#include <vector>
+#include <iostream> 
+#include <vector> 
 
-// Andrés Martínez, A00227463
-// https://www.geeksforgeeks.org/merge-sort/
+// Andres Martinez
+//  https://www.geeksforgeeks.org/merge-sort/
+//  Introduction to Algorithms, MIT
 
-void merge(std::vector<double> &arr, int l, int m, int r) {
-  int n1 = m - l + 1;
-  int n2 = r - m;
+void merge(std::vector<double> & arr, int p, int q, int r) {
+  int n1 = q - p + 1;  // length of first half 
+  int n2 = r - q; // length of second half
 
-  double L[n1]; // Two Arrays (empty), one the size of the first half and the
-                // other with the size of the other size.
-  double R[n2];
+  double L[n1]; double R[n2];
 
-  for (int i = 0; i < n1; i++) // Add each element of the left to the L[] arr
-    L[i] = arr[l + i];
-  for (int j = 0; j < n2; j++) // Same goes for the R[] arr
-    R[j] = arr[m + 1 + j];
+  for (int i = 0; i < n1; i++) {
+    L[i] = arr[p + i]; // Copy the first half 
+  }
 
-  int i = 0, j = 0;
-  int k = l;
+  for (int j = 0; j < n2; j++) {
+    R[j] = arr[q + j + 1]; // Copy the second half
+  }
 
-  while ((i < n1) && (j < n2)) {
-    if (L[i] >= R[j]) { // If value from the L is equal or higher than the one
-                        // on the right
+  int i = 0; int j = 0; int k = p;
+
+  while (i < n1 && j < n2) { 
+    if (L[i] <= R[j]) { 
       arr[k] = L[i];
       i++;
-    } else {
+    }
+    else {
       arr[k] = R[j];
       j++;
     }
@@ -35,47 +36,48 @@ void merge(std::vector<double> &arr, int l, int m, int r) {
   while (i < n1) {
     arr[k] = L[i];
     i++;
-    k++;
+    k++; 
   }
-  while (j < n2) {
+
+  while (i < n2) {
     arr[k] = R[j];
-    j++;
+    j++; 
     k++;
   }
 }
 
-void mergeSort(std::vector<double> &arr, int l, int r) {
-  std::cout << ":D" << std::endl;
-  if (l >= r) {
-    return;
+void merge_sort(std::vector<double> & arr, int p, int r) {
+  // std::cout << "D:" << std::endl; 
+  if (p >= r) {  // if there's one or no element
+  return; 
   }
-  int m = l + (r - l) / 2;
 
-  mergeSort(arr, l, m);
-  mergeSort(arr, m + 1, r);
-  merge(arr, l, m, r);
+  int q = p + (r - p) / 2; // midpoint, used to avoid integer overflow 
+
+  merge_sort(arr, p, q); // First half
+  merge_sort(arr, q + 1, r);  // Second half
+
+  merge(arr, p, q, r); 
+
 }
 
-void print_arr(std::vector<double> arr) {
+
+void print_vector(std::vector<double> arr) { 
   int arr_size = arr.size();
   for (int i = 0; i < arr_size; i++) {
-    std::cout << arr[i] << "\t";
+    std::cout << arr[i] << "\t"; 
   }
+  std::cout << "\n";
 }
 
 int main() {
-  int n, i, input;
-  std::vector<double> arr;
-  arr.resize(10);
-  for (i = 0; i < 10; i++) {
-    arr[i] = 10 - i;
-  }
-  int arr_size = arr.size();
+  std::vector<double> arr = {1,2,3,4};
+  arr.resize(4); 
+  print_vector(arr);
 
-  mergeSort(arr, 0, arr_size - 1);
 
-  std::cout << "Print Final Array" << std::endl;
-  print_arr(arr);
-
-  return 0;
+  int arr_size = arr.size(); 
+  merge_sort(arr, 0, arr_size - 1);
+  print_vector(arr); 
+  return 0; 
 }
