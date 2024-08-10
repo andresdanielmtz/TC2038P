@@ -93,11 +93,13 @@ int main() {
     }
     index++;
   }
+  std::cout << "Array original: \t";
   print_vector(arr);
 
   int arr_size = arr.size();
   merge_sort(arr, 0, arr_size - 1);
 
+  std::cout << "Array ordenado: \t";
   print_vector(arr);
   return 0;
 }
