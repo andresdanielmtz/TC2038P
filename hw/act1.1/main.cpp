@@ -3,8 +3,9 @@
 #include <vector>
 
 // Andres Martinez
-//  https://www.geeksforgeeks.org/merge-sort/
-//  Introduction to Algorithms, MIT
+// GeeksforGeeks. (2024, 6 agosto). Merge Sort   Data Structure and Algorithms
+// Tutorials. GeeksforGeeks. https://www.geeksforgeeks.org/merge-sort/
+// Introduction to Algorithms, MIT
 
 // TODO: Implement i/o
 
@@ -29,7 +30,7 @@ void merge(std::vector<double> &arr, int p, int q, int r) {
   k = p;
 
   while (i < n1 && j < n2) {
-    if (L[i] <= R[j]) {
+    if (L[i] >= R[j]) {
       arr[k] = L[i];
       i++;
     } else {
