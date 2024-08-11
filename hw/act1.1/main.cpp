@@ -85,8 +85,10 @@ int main() {
   std::vector<double> arr;
 
   for (std::string line; std::getline(std::cin, line);) {
-    if (index != 0) {
+    if (index != 0 && index <= size_arr) {
       arr.push_back(std::stod(line));
+    } else {
+      size_arr = std::stod(line);
     }
     index++;
   }
