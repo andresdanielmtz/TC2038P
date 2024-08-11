@@ -2,33 +2,29 @@
 #include <string>
 #include <vector>
 
-// Andres Martinez
-// GeeksforGeeks. (2024, 6 agosto). Merge Sort   Data Structure and Algorithms
-// Tutorials. GeeksforGeeks. https://www.geeksforgeeks.org/merge-sort/
-// Introduction to Algorithms, MIT
-
-// TODO: Implement i/o
+// Andres Martinez, A00227463
 
 void merge(std::vector<double> &arr, int p, int q, int r) {
   int i, j, k;
-  int n1 = q - p + 1; // length of first half
-  int n2 = r - q;     // length of second half
+  int n1 = q - p + 1;
+  int n2 = r - q;
 
   double L[n1];
   double R[n2];
 
   for (i = 0; i < n1; i++) {
-    L[i] = arr[p + i]; // Copy the first half
+    L[i] = arr[p + i];
   }
 
   for (j = 0; j < n2; j++) {
-    R[j] = arr[q + j + 1]; // Copy the second half
+    R[j] = arr[q + j + 1];
   }
 
   i = 0;
   j = 0;
   k = p;
 
+  // Conquer
   while (i < n1 && j < n2) {
     if (L[i] >= R[j]) {
       arr[k] = L[i];
@@ -54,16 +50,17 @@ void merge(std::vector<double> &arr, int p, int q, int r) {
 }
 
 void merge_sort(std::vector<double> &arr, int p, int r) {
-  // std::cout << "D:" << std::endl;
   if (p >= r) { // if there's one or no element
     return;
   }
 
+  // Divide
   int q = p + (r - p) / 2; // midpoint, used to avoid integer overflow
 
-  merge_sort(arr, p, q);     // First half
-  merge_sort(arr, q + 1, r); // Second half
+  merge_sort(arr, p, q);
+  merge_sort(arr, q + 1, r);
 
+  // Combine
   merge(arr, p, q, r);
 }
 
