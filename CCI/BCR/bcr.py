@@ -27,7 +27,6 @@ def bcr_linear(arr1, arr2) -> int:
             i += 1
         else:
             j += 1
-    
     return counter
 
 result = bcr_linear(arr1, arr2)
