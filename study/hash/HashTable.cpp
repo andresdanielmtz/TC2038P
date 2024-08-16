@@ -21,7 +21,6 @@ void HashTable::resize(int new_size) {
 double HashTable::getLoadFactor() const {
   return static_cast<double>(numElements) / size;
 }
-
 void HashTable::insert(int key, const std::string &value) {
   if (getLoadFactor() >= 0.8) {
     resize(size * 2);
@@ -37,8 +36,20 @@ void HashTable::insert(int key, const std::string &value) {
     }
   }
 
-  chain.push_back(std::make_pair(key, value));
-  ++numElements;
+  // Probing
+  int probeIndex = (hashIndex + 1) % size;
+  while (probeIndex != hashIndex) {
+    auto &probeChain = table[probeIndex];
+    if (probeChain.empty()) {
+      probeChain.push_back(std::make_pair(key, value));
+      ++numElements;
+      return;
+    }
+    probeIndex = (probeIndex + 1) % size;
+  }
+
+  resize(size * 2);
+  insert(key, value);
 }
 
 std::string HashTable::search(int key) const {
