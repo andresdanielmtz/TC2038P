@@ -1,9 +1,9 @@
-denom = {500: 10, 200: 5, 100: 10, 50: 12, 20: 14, 10: 2, 5: 1, 2: 1, 1: 2}
+denom = {500: 10, 200: 5, 100: 10, 50: 12, 20: 14, 10: 2, 5: 1, 2: 1, 1: 0}
 combinations = {}
 
 
 def get_combination(change: int, denom: dict, memo: dict) -> list[int]:
-    print("Computing a new combination :)")
+    # print("Computing a new combination :)")
     change_combination = []
     change_copy = change
     for val in denom:
@@ -20,7 +20,7 @@ def get_combination(change: int, denom: dict, memo: dict) -> list[int]:
 
 
 def get_combination_stored(change: int, memo: dict, denom: dict) -> list[int]:
-    print("Using a stored combination :D")
+    # print("Using a stored combination :D")
     total_change = memo[change]
     combination = []
     for elem in total_change:
