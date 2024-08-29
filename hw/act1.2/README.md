@@ -4,6 +4,6 @@
 Andrés Daniel Martínez - A00227463
 
 ### Contenido 
-- Merge Sort (`countingMoney/`)
-- Fibonacci y Programación Dinámica (`fib/`)
-- Counting Money Problem (`hashTable/`)
+- Merge Sort (`mergeSort/`)
+- Fibonacci y Programación Dinámica + Hash Table (`fib/`)
+- Counting Money Problem (`countingMoney/`)
