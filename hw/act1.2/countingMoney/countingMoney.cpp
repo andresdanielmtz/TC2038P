@@ -360,7 +360,7 @@ int main() {
     std::cout << "Greedy Result: ";
 
     for (int value : greedy_result) {
-        std::cout << value << std::endl;
+        std::cout << value << " ";
     }
     std::cout << std::endl;
 
