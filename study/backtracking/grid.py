@@ -1,32 +1,23 @@
 import random
 import copy 
 from collections import deque
-def setup_matrix(n: int):
-    matrix = []
-    count = 0
-    for i in range(n):
-        local = []
-        for j in range(n):
-            local.append(count)
-            count += 1
-            if len(local) > 3:
-                matrix.append(local)
-                local = []
-    matrix[n - 1][n - 1] = "v"
-    return matrix 
+def setup_matrix(n: int) -> list[list[int]]:
+    matrix = [[n * i + j for j in range(n)] for i in range(n)]
+    matrix[n-1][n-1] = "v"
+    return matrix
+
 
 def compare_matrix(m: list[list[int]], n: list[list[int]]) -> int:
+    """Compares two matrices and counts the matching elements."""
     if len(m) != len(n): 
         print("Please output a correct list")
         return 0
     counter = 0
-    for i in range(0, len(n) - 1):
-        for j in range(0, len(n) - 1):
-            if (n[i][j] == m[i][j]):
-                print(":D")
+    for i in range(len(n)):
+        for j in range(len(n[i])):
+            if n[i][j] == m[i][j]:
                 counter += 1
-    print(f"Comparison Meter: {counter}")
-    return counter 
+    return counter
 
 def randomized_matrix(n: int) -> list[int]:
     matrix = []
@@ -64,7 +55,7 @@ def get_matrix_variants(matrix: list[list[int]]) -> list[list[list[int]]]:
             variants.append(new_matrix) 
     return variants
 
-def backtracking(objective: list[list[int]], matrix = list[list[int]]) -> list[list[int]]:
+def backtracking(objective: list[list[int]], matrix: list[list[int]]) -> list[list[int]]:
     print(f"Original Matrix: {matrix} \n")
     queue = deque([(matrix, [])])
     visited = set()
@@ -88,9 +79,14 @@ def backtracking(objective: list[list[int]], matrix = list[list[int]]) -> list[l
 
     return []  #
 def main(n: int): 
+    """Main function to setup and run the backtracking solver."""
     matrix = setup_matrix(n)
     random_matrix = randomized_matrix(n)
+    
+    # Display the path from the initial random matrix to the objective state
+    path = backtracking(matrix, random_matrix)
+    for step, mat in enumerate(path):
+        print(f"Step {step}:\n{mat}\n")
 
-    backtracking(matrix, random_matrix)
 
 main(4)
