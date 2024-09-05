@@ -1,14 +1,14 @@
 import random
 import copy 
 from collections import deque
+
 def setup_matrix(n: int) -> list[list[int]]:
     matrix = [[n * i + j for j in range(n)] for i in range(n)]
-    matrix[n-1][n-1] = "v"
+    matrix[n-1][n-1] = "v" # last element is "v" 
     return matrix
 
 
 def compare_matrix(m: list[list[int]], n: list[list[int]]) -> int:
-    """Compares two matrices and counts the matching elements."""
     if len(m) != len(n): 
         print("Please output a correct list")
         return 0
@@ -56,37 +56,40 @@ def get_matrix_variants(matrix: list[list[int]]) -> list[list[list[int]]]:
     return variants
 
 def backtracking(objective: list[list[int]], matrix: list[list[int]]) -> list[list[int]]:
-    print(f"Original Matrix: {matrix} \n")
-    queue = deque([(matrix, [])])
-    visited = set()
+    current_matrix = matrix 
+    combination_path = []
+    max_steps = 1000
+    while current_matrix != objective: 
+        max_steps -= 1 
+        if max_steps == 0:
+            print("No se puede mi rey ")
+            return 
+        combinations = get_matrix_variants(current_matrix) # combinations 
+        local_val = -1 # can't have -1 
+        current_combination = None
 
-    while queue:
-        current_matrix, path = queue.popleft()
-        
-        if current_matrix == objective:
-            return path + [current_matrix]
+        if not combinations: return 
 
-        matrix_tuple = tuple(map(tuple, current_matrix))
-        if matrix_tuple in visited:
-            continue
-        visited.add(matrix_tuple)
+        for comb in combinations: 
+            val = compare_matrix(comb, objective)
+            if val > local_val: 
+                local_val = val
+                current_combination = comb
+        # print(local_val)
+        current_matrix = current_combination
+        combination_path.append(current_combination)
+    return combination_path
 
-        combinations = get_matrix_variants(current_matrix)
-        combinations.sort(key=lambda x: compare_matrix(x, objective), reverse=True)
 
-        for next_matrix in combinations:
-            queue.append((next_matrix, path + [current_matrix]))
 
-    return []  #
 def main(n: int): 
     """Main function to setup and run the backtracking solver."""
-    matrix = setup_matrix(n)
     random_matrix = randomized_matrix(n)
-    
-    # Display the path from the initial random matrix to the objective state
-    path = backtracking(matrix, random_matrix)
-    for step, mat in enumerate(path):
-        print(f"Step {step}:\n{mat}\n")
+    random_variant = get_matrix_variants(random_matrix)[0]
+    # print(compare_matrix(random_matrix, random_variant))
 
+    # Display the path from the initial random matrix to the objective state
+    path = backtracking(random_matrix, random_variant)
+    print(path)
 
 main(4)
