@@ -20,7 +20,7 @@ def compare_matrix(m: list[list[int]], n: list[list[int]]) -> int:
     return counter
 
 def randomized_matrix(matrix: list[list[int]]) -> list[list[int]]:
-    for i in range(4, random.randint(1, 10)):
+    for i in range(4, random.randint(1, 100)):
         combination_list = get_matrix_variants(matrix)
         if not combination_list: return matrix 
         matrix = random.choice(combination_list)
@@ -49,11 +49,11 @@ def get_matrix_variants(matrix: list[list[int]]) -> list[list[list[int]]]:
 def backtracking(objective: list[list[int]], matrix: list[list[int]]) -> list[list[int]]:
     current_matrix = matrix 
     combination_path = []
-    max_steps = 1000
+    max_steps = 10000
     while current_matrix != objective: 
         max_steps -= 1 
         if max_steps == 0:
-            print("No se puede mi rey ")
+            print("Esa solución va por encima del número de pasos establecidos dentro del programa")
             return 
         combinations = get_matrix_variants(current_matrix) # combinations 
         local_val = -1 # can't have -1 
@@ -86,4 +86,4 @@ def main(n: int):
     path = backtracking(matrix, random_matrix)
     print(path)
 
-main(4)
+main(10)
