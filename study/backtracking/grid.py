@@ -19,21 +19,12 @@ def compare_matrix(m: list[list[int]], n: list[list[int]]) -> int:
                 counter += 1
     return counter
 
-def randomized_matrix(n: int) -> list[int]:
-    matrix = []
-    values = [x for x in range(0, n ** 2)]
-    for i in range(n):
-        local = []
-        for j in range(n):
-            elem = random.choice(values)
-            local.append(elem)
-            values.remove(elem)
-            if len(local) > 3: 
-                matrix.append(local)
-                local = []
-
-    matrix[random.randint(0, n - 1)][random.randint(0, n - 1)] = "v"
-    return matrix 
+def randomized_matrix(matrix: list[list[int]]) -> list[list[int]]:
+    for i in range(4, random.randint(1, 10)):
+        combination_list = get_matrix_variants(matrix)
+        if not combination_list: return matrix 
+        matrix = random.choice(combination_list)
+    return matrix
 
 def get_matrix_variants(matrix: list[list[int]]) -> list[list[list[int]]]:
     variants = []
@@ -84,12 +75,15 @@ def backtracking(objective: list[list[int]], matrix: list[list[int]]) -> list[li
 
 def main(n: int): 
     """Main function to setup and run the backtracking solver."""
-    random_matrix = randomized_matrix(n)
-    random_variant = get_matrix_variants(random_matrix)[0]
-    # print(compare_matrix(random_matrix, random_variant))
+    matrix = setup_matrix(n)
+    random_matrix = randomized_matrix(matrix)
 
-    # Display the path from the initial random matrix to the objective state
-    path = backtracking(random_matrix, random_variant)
+    print(f"Objective Matrix: \n {matrix} \n")
+    print(f"Current Matrix: \n {random_matrix} \n")
+
+    print("Path used to get to there: \n")
+
+    path = backtracking(matrix, random_matrix)
     print(path)
 
 main(4)
