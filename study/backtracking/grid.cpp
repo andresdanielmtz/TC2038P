@@ -2,7 +2,6 @@
 #include <vector>
 #include <random>
 #include <algorithm>
-#include <chrono>
 
 using Matrix = std::vector<std::vector<int> >;
 
@@ -24,11 +23,11 @@ int compare_matrix(const Matrix& m, const Matrix& n) {
     }
     int counter = 0;
     for (size_t i = 0; i < n.size(); ++i) {
-        for (size_t j = 0; j < n[i].size(); ++j) {
-            if (n[i][j] == m[i][j]) {
-                ++counter;
-            }
-        }
+          for (size_t j = 0; j < n[i].size(); ++j) {
+              if (n[i][j] == m[i][j]) {
+                  ++counter;
+              }
+          }
     }
     return counter;
 }
@@ -119,7 +118,7 @@ void print_matrix(const Matrix& matrix) {
 }
 
 int main() {
-    int n = 10;
+    int n = 3;
     Matrix matrix = setup_matrix(n);
     Matrix random_matrix = randomized_matrix(matrix);
     
