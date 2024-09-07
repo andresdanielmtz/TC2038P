@@ -18,9 +18,9 @@ struct PointHash {
 vector<Point> get_all_combinations(const vector<vector<int>>& board, const Point& start) {
     vector<Point> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
     vector<Point> possible_dir;
-    for (const auto& dir : directions) {
-        int x_dir = start.first + dir.first;
-        int y_dir = start.second + dir.second;
+    for (const auto& direction : directions) {
+        int x_dir = start.first + direction.first;
+        int y_dir = start.second + direction.second;
         if (x_dir >= 0 && x_dir < board.size() && y_dir >= 0 && y_dir < board[0].size()) {
             if (board[x_dir][y_dir] == 1) {
                 possible_dir.push_back({x_dir, y_dir});
@@ -34,6 +34,40 @@ int get_distance(const Point& start, const Point& dest) {
     return abs(dest.first - start.first) + abs(dest.second - start.second);
 }
 
+// Backtracking method
+vector<Point> backtrack(const vector<vector<int>>& board, const Point& start, const Point& dest, vector<vector<bool>>& visited) {
+    if (start == dest) {
+        return {start};
+    }
+
+    visited[start.first][start.second] = true;
+    vector<Point> possible_moves = get_all_combinations(board, start);
+    
+    sort(possible_moves.begin(), possible_moves.end(), 
+         [&dest](const Point& a, const Point& b) {
+             return get_distance(a, dest) < get_distance(b, dest);
+         });
+
+    for (const auto& move : possible_moves) {
+        if (!visited[move.first][move.second]) {
+            vector<Point> path = backtrack(board, move, dest, visited);
+            if (!path.empty()) {
+                path.insert(path.begin(), start);
+                return path;
+            }
+        }
+    }
+
+    visited[start.first][start.second] = false;
+    return {};
+}
+
+vector<Point> get_best_choice_backtracking(const vector<vector<int>>& board, const Point& start, const Point& dest) {
+    vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(), false));
+    return backtrack(board, start, dest, visited);
+}
+
+// A* method
 vector<Point> reconstruct_path(const unordered_map<Point, Point, PointHash>& came_from, Point current) {
     vector<Point> total_path = {current};
     while (came_from.find(current) != came_from.end()) {
@@ -44,7 +78,7 @@ vector<Point> reconstruct_path(const unordered_map<Point, Point, PointHash>& cam
     return total_path;
 }
 
-vector<Point> get_best_choice(const vector<vector<int>>& board, const Point& start, const Point& dest) {
+vector<Point> get_best_choice_astar(const vector<vector<int>>& board, const Point& start, const Point& dest) {
     auto cmp = [](const tuple<int, Point, vector<Point>>& a, const tuple<int, Point, vector<Point>>& b) {
         return get<0>(a) > get<0>(b);
     };
@@ -80,7 +114,6 @@ vector<Point> get_best_choice(const vector<vector<int>>& board, const Point& sta
         }
     }
 
-    cout << "It is not possible to get to this destination" << endl;
     return {};
 }
 
@@ -98,23 +131,33 @@ void print_board(const vector<vector<int>>& board, const vector<Point>& path) {
 }
 
 int main() {
-    vector<vector<int>> board = {
-        {1, 0, 0, 0},
-        {1, 1, 0, 1},
-        {0, 1, 0, 0},
-        {1, 1, 1, 1}
-    };
+    int rows, cols;
+    cin >> rows >> cols;
 
-    Point dest = {static_cast<int>(board.size()) - 1, static_cast<int>(board[0].size()) - 1};
+    vector<vector<int>> board(rows, vector<int>(cols));
+    for (int i = 0; i < rows; ++i) {
+        for (int j = 0; j < cols; ++j) {
+            cin >> board[i][j];
+        }
+    }
+
     Point start = {0, 0};
+    Point dest = {rows - 1, cols - 1};
 
-    vector<Point> choices = get_best_choice(board, start, dest);
-
-
-    if (!choices.empty()) {
-        print_board(board, choices);
+    cout << "Backtracking method result:" << endl;
+    vector<Point> backtracking_path = get_best_choice_backtracking(board, start, dest);
+    if (!backtracking_path.empty()) {
+        print_board(board, backtracking_path);
     } else {
-        cout << "It was not possible :(((" << endl;
+        cout << "It was not possible (Backtracking)" << endl;
+    }
+
+    cout << "\nA* method result:" << endl;
+    vector<Point> astar_path = get_best_choice_astar(board, start, dest);
+    if (!astar_path.empty()) {
+        print_board(board, astar_path);
+    } else {
+        cout << "It was not possible (A*)" << endl;
     }
 
     return 0;

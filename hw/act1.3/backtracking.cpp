@@ -1,20 +1,11 @@
 #include <iostream>
 #include <vector>
-#include <queue>
-#include <unordered_map>
 #include <cmath>
 #include <algorithm>
 
 using namespace std;
 
 typedef pair<int, int> Point;
-
-// Custom hash function for Point
-struct PointHash {
-    size_t operator()(const Point& p) const {
-        return hash<int>()(p.first) ^ hash<int>()(p.second);
-    }
-};
 
 vector<Point> get_all_combinations(const vector<vector<int>>& board, const Point& start) {
     vector<Point> directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
@@ -35,54 +26,43 @@ int get_distance(const Point& start, const Point& dest) {
     return abs(dest.first - start.first) + abs(dest.second - start.second);
 }
 
-vector<Point> reconstruct_path(const unordered_map<Point, Point, PointHash>& came_from, Point current) {
-    vector<Point> total_path = {current};
-    while (came_from.find(current) != came_from.end()) {
-        current = came_from.at(current);
-        total_path.push_back(current);
+vector<Point> backtrack(const vector<vector<int>>& board, const Point& start, const Point& dest, vector<vector<bool>>& visited) {
+    if (start == dest) {
+        return {start};
     }
-    reverse(total_path.begin(), total_path.end());
-    return total_path;
-}
 
-vector<Point> get_best_choice(const vector<vector<int>>& board, const Point& start, const Point& dest) {
-    auto cmp = [](const tuple<int, Point, vector<Point>>& a, const tuple<int, Point, vector<Point>>& b) {
-        return get<0>(a) > get<0>(b);
-    };
-    priority_queue<tuple<int, Point, vector<Point>>, vector<tuple<int, Point, vector<Point>>>, decltype(cmp)> heap(cmp);
+    visited[start.first][start.second] = true;
+    vector<Point> possible_moves = get_all_combinations(board, start);
     
-    unordered_map<Point, int, PointHash> g_scores;
-    unordered_map<Point, int, PointHash> f_scores;
-    unordered_map<Point, Point, PointHash> came_from;
 
-    heap.push({0, start, {}});
-    g_scores[start] = 0;
-    f_scores[start] = get_distance(start, dest);
+    sort(possible_moves.begin(), possible_moves.end(), 
+         [&dest](const Point& a, const Point& b) {
+             return get_distance(a, dest) < get_distance(b, dest);
+         });
 
-    while (!heap.empty()) {
-        auto [f, current, path] = heap.top();
-        heap.pop();
-
-        if (current == dest) {
-            return reconstruct_path(came_from, current);
-        }
-
-        for (const auto& neighbor : get_all_combinations(board, current)) {
-            int tentative_g_score = g_scores[current] + 1;
-
-            if (g_scores.find(neighbor) == g_scores.end() || tentative_g_score < g_scores[neighbor]) {
-                came_from[neighbor] = current;
-                g_scores[neighbor] = tentative_g_score;
-                f_scores[neighbor] = tentative_g_score + get_distance(neighbor, dest);
-                vector<Point> new_path = path;
-                new_path.push_back(neighbor);
-                heap.push({f_scores[neighbor], neighbor, new_path});
+    for (const auto& move : possible_moves) {
+        if (!visited[move.first][move.second]) {
+            vector<Point> path = backtrack(board, move, dest, visited);
+            if (!path.empty()) {
+                path.insert(path.begin(), start);
+                return path;
             }
         }
     }
 
-    cout << "It is not possible to get to this destination" << endl;
+    visited[start.first][start.second] = false;
     return {};
+}
+
+vector<Point> get_best_choice(const vector<vector<int>>& board, const Point& start, const Point& dest) {
+    vector<vector<bool>> visited(board.size(), vector<bool>(board[0].size(), false));
+    vector<Point> path = backtrack(board, start, dest, visited);
+    
+    if (path.empty()) {
+        cout << "It is not possible to get to this destination" << endl;
+    }
+    
+    return path;
 }
 
 void print_board(const vector<vector<int>>& board, const vector<Point>& path) {
@@ -91,7 +71,7 @@ void print_board(const vector<vector<int>>& board, const vector<Point>& path) {
             if (find(path.begin(), path.end(), Point{i, j}) != path.end()) {
                 cout << "1 ";
             } else {
-                cout << "0 ";
+                cout << board[i][j] << " ";
             }
         }
         cout << endl;
