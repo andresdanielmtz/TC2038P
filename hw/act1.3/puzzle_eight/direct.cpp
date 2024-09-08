@@ -1,9 +1,8 @@
 #include <iostream>
 #include <vector>
-#include <algorithm>
 #include <random>
+#include <algorithm>
 #include <chrono>
-#include <unordered_set>
 
 using namespace std;
 
@@ -20,16 +19,6 @@ Matrix setup_matrix(int n) {
     return matrix;
 }
 
-void print_matrix(const Matrix& matrix) {
-    for (const auto& row : matrix) {
-        for (int val : row) {
-            if (val == -1) cout << "v ";
-            else cout << val << " ";
-        }
-        cout << endl;
-    }
-}
-
 int compare_matrix(const Matrix& m, const Matrix& n) {
     if (m.size() != n.size()) {
         cout << "Please output a correct list" << endl;
@@ -44,32 +33,6 @@ int compare_matrix(const Matrix& m, const Matrix& n) {
         }
     }
     return counter;
-}
-
-Matrix randomized_matrix(const Matrix& matrix) {
-    int n = matrix.size();
-    vector<int> flat_matrix;
-    for (const auto& row : matrix) {
-        for (int val : row) {
-            if (val != -1) flat_matrix.push_back(val);
-        }
-    }
-    
-    unsigned seed = chrono::system_clock::now().time_since_epoch().count();
-    shuffle(flat_matrix.begin(), flat_matrix.end(), default_random_engine(seed));
-
-    Matrix new_matrix(n, vector<int>(n));
-    int index = 0;
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < n; j++) {
-            if (i == n - 1 && j == n - 1) {
-                new_matrix[i][j] = -1;
-            } else {
-                new_matrix[i][j] = flat_matrix[index++];
-            }
-        }
-    }
-    return new_matrix;
 }
 
 vector<Matrix> get_matrix_variants(const Matrix& matrix) {
@@ -99,60 +62,60 @@ vector<Matrix> get_matrix_variants(const Matrix& matrix) {
     return variants;
 }
 
-vector<Matrix> backtracking(const Matrix& objective, Matrix matrix, int max_steps = 30000) {
+Matrix randomized_matrix(Matrix matrix) {
+    random_device rd;
+    mt19937 gen(rd());
+    uniform_int_distribution<> dis(1, 15); // limits 
+    
+    for (int i = 0; i < dis(gen); i++) {
+        auto combination_list = get_matrix_variants(matrix);
+        if (combination_list.empty()) return matrix;
+        matrix = combination_list[dis(gen) % combination_list.size()];
+    }
+    return matrix;
+}
+
+vector<Matrix> backtracking(const Matrix& objective, Matrix matrix) {
     Matrix current_matrix = matrix;
     vector<Matrix> combination_path;
-    int steps = 0;
-    unordered_set<string> visited;
-
-    auto matrix_to_string = [](const Matrix& m) {
-        string s;
-        for (const auto& row : m) {
-            for (int val : row) {
-                s += to_string(val) + ",";
-            }
+    int max_steps = 10000;
+    while (current_matrix != objective) {
+        max_steps--;
+        if (max_steps == 0) {
+            cout << "Esa solución va por encima del número de pasos establecidos dentro del programa" << endl;
+            return {};
         }
-        return s;
-    };
-
-    while (current_matrix != objective && steps < max_steps) {
-        string matrix_str = matrix_to_string(current_matrix);
-        if (visited.find(matrix_str) != visited.end()) {
-            // Instead of returning empty, let's try a random move
-            auto combinations = get_matrix_variants(current_matrix);
-            if (combinations.empty()) return {};
-            current_matrix = combinations[rand() % combinations.size()];
-            continue;
-        }
-        visited.insert(matrix_str);
-
         auto combinations = get_matrix_variants(current_matrix);
+        int local_val = -1;
+        Matrix current_combination;
+
         if (combinations.empty()) return {};
 
-        auto best_combination = *max_element(combinations.begin(), combinations.end(),
-            [&objective](const Matrix& a, const Matrix& b) {
-                return compare_matrix(a, objective) < compare_matrix(b, objective);
-            });
-        
-        if (compare_matrix(best_combination, objective) <= compare_matrix(current_matrix, objective)) {
-            // If we're not improving, try a random move
-            best_combination = combinations[rand() % combinations.size()];
+        for (const auto& comb : combinations) {
+            int val = compare_matrix(comb, objective);
+            if (val > local_val) {
+                local_val = val;
+                current_combination = comb;
+            }
         }
-
-        cout << "Step " << steps + 1 << ":" << endl;
-        print_matrix(best_combination);
-        cout << endl;
-
-        current_matrix = best_combination;
-        combination_path.push_back(current_matrix);
-        steps++;
+        current_matrix = current_combination;
+        combination_path.push_back(current_combination);
     }
+    return combination_path;
+}
 
-    return (current_matrix == objective) ? combination_path : vector<Matrix>{};
+void print_matrix(const Matrix& matrix) {
+    for (const auto& row : matrix) {
+        for (int val : row) {
+            if (val == -1) cout << "v ";
+            else cout << val << " ";
+        }
+        cout << endl;
+    }
 }
 
 int main() {
-    int n = 3; // You can change this to any size you want
+    int n = 3;
     auto matrix = setup_matrix(n);
     auto random_matrix = randomized_matrix(matrix);
 
@@ -160,16 +123,16 @@ int main() {
     print_matrix(matrix);
     cout << endl;
 
-    cout << "Initial Matrix:" << endl;
+    cout << "Current Matrix:" << endl;
     print_matrix(random_matrix);
     cout << endl;
 
-    cout << "Backtracking Path:" << endl;
-    auto backtracking_path = backtracking(matrix, random_matrix);
-    if (!backtracking_path.empty()) {
-        cout << "Solution found in " << backtracking_path.size() << " moves." << endl;
-    } else {
-        cout << "No solution found with backtracking." << endl;
+    cout << "Path used to get there:" << endl;
+
+    auto path = backtracking(matrix, random_matrix);
+    for (const auto& step : path) {
+        print_matrix(step);
+        cout << endl;
     }
 
     return 0;
