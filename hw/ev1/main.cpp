@@ -30,6 +30,35 @@ std::vector<std::string> read_file(std::string file_name) {
   return string_content;
 }
 
+bool in_word(std::string substr, std::string str) {
+  return str.find(substr) != std::string::npos;
+} // lol
+
+void is_substrs_in_str(std::vector<std::string> str_vector,
+                       std::vector<std::string> words) {
+
+  bool checker = false;
+  for (std::string word : words) {
+    for (std::string str : str_vector) {
+      if (in_word(word, str)) {
+        checker = true;
+      }
+    }
+    if (checker == true) {
+      std::cout << "True" << std::endl;
+    } else {
+      std::cout << "False" << std::endl;
+    }
+  }
+}
+
+void print_vector(std::vector<std::string> vec) {
+  for (std::string elem : vec) {
+    std::cout << elem << " ";
+  }
+  std::cout << std::endl;
+}
+
 int main() {
   std::vector<std::string> transmission_one = read_file("transmission1.txt");
   std::vector<std::string> transmission_two = read_file("transmission2.txt");
@@ -37,8 +66,11 @@ int main() {
   std::string mcode_one = read_file("mcode1.txt")[0];
   std::string mcode_two = read_file("mcode2.txt")[0];
   std::string mcode_three = read_file("mcode3.txt")[0];
+  std::vector<std::string> word_vector;
+  word_vector.push_back(mcode_one);
+  word_vector.push_back(mcode_two);
+  word_vector.push_back(mcode_three);
 
-  std::cout << mcode_one << std::endl;
-  std::cout << mcode_two << std::endl;
-  std::cout << mcode_three << std::endl;
+  is_substrs_in_str(transmission_one, word_vector);
+  is_substrs_in_str(transmission_two, word_vector);
 }
