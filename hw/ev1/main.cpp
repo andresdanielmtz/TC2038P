@@ -45,9 +45,9 @@ void is_substrs_in_str(std::vector<std::string> str_vector,
       }
     }
     if (checker == true) {
-      std::cout << "True" << std::endl;
+      std::cout << "True" << word << std::endl;
     } else {
-      std::cout << "False" << std::endl;
+      std::cout << "False" << word << std::endl;
     }
   }
 }
