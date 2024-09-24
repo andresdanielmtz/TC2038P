@@ -45,9 +45,9 @@ void is_substrs_in_str(std::vector<std::string> str_vector,
       }
     }
     if (checker == true) {
-      std::cout << "True" << word << std::endl;
+      std::cout << "True\t" << word << std::endl;
     } else {
-      std::cout << "False" << word << std::endl;
+      std::cout << "False\t" << word << std::endl;
     }
   }
 }
@@ -57,6 +57,70 @@ void print_vector(std::vector<std::string> vec) {
     std::cout << elem << " ";
   }
   std::cout << std::endl;
+}
+
+std::string split(std::string word, int l, int r) {
+  std::string result = "";
+  for (int i = l; i <= r; i++) {
+    result = result + word[i];
+  }
+  return result;
+}
+
+std::vector<std::string>
+find_all_palindromes(const std::vector<std::string> &content) {
+  std::vector<std::string> palindromes;
+
+  for (const std::string &word : content) {
+    int word_length = word.length();
+    for (int l = 0; l < word_length; l++) {
+      for (int r = l; r < word_length; r++) {
+        std::string word_in_range = split(word, l, r);
+        if (is_palindrome(word_in_range) && word_in_range.length() > 1) {
+          palindromes.push_back(word_in_range);
+        }
+      }
+    }
+  }
+  return palindromes;
+}
+
+std::string longest_common_palindrome(std::vector<std::string> arr_one,
+                                      std::vector<std::string> arr_two) {
+  std::string lcp = ""; // lcp = longest common palindrome
+  for (std::string elem_one : arr_one) {
+    for (std::string elem_two : arr_two) {
+      if ((elem_one == elem_two) && (elem_one.length() > lcp.length())) {
+        lcp = elem_one;
+      }
+    }
+  }
+  return lcp;
+}
+
+std::pair<int, int>
+longest_palindrome(const std::vector<std::string> &content) {
+  std::string longest_pal = "";
+  int longest_start = 0;
+  int longest_end = 0;
+  int total_length = 0;
+
+  for (const std::string &word : content) {
+    int word_length = word.length();
+    for (int l = 0; l < word_length; l++) {
+      for (int r = l; r < word_length; r++) {
+        std::string word_in_range = split(word, l, r);
+        if (is_palindrome(word_in_range) &&
+            word_in_range.length() > longest_pal.length()) {
+          longest_pal = word_in_range;
+          longest_start = total_length + l;
+          longest_end = total_length + r;
+        }
+      }
+    }
+    total_length += word_length + 1;
+  }
+  return std::make_pair(longest_start, longest_end);
 }
 
 int main() {
@@ -71,6 +135,27 @@ int main() {
   word_vector.push_back(mcode_two);
   word_vector.push_back(mcode_three);
 
+  std::cout << "PART 1" << std::endl;
   is_substrs_in_str(transmission_one, word_vector);
   is_substrs_in_str(transmission_two, word_vector);
+
+  std::cout << "PART 2" << std::endl;
+  std::pair<int, int> result_one = longest_palindrome(transmission_one);
+  std::cout << "Start index: " << result_one.first
+            << ", End index: " << result_one.second << std::endl;
+
+  std::pair<int, int> result_two = longest_palindrome(transmission_two);
+  std::cout << "Start index: " << result_two.first
+            << ", End index: " << result_two.second << std::endl;
+
+  std::cout << "PART 3" << std::endl;
+  std::vector<std::string> transmission_one_palindromes =
+      find_all_palindromes(transmission_one);
+  std::vector<std::string> transmission_two_palindromes =
+      find_all_palindromes(transmission_two);
+
+  std::string lcp = longest_common_palindrome(transmission_one_palindromes,
+                                              transmission_two_palindromes);
+  std::cout << "The longest common palindrome within these two files is: "
+            << lcp << std::endl;
 }
