@@ -102,27 +102,26 @@ longest_palindrome(const std::vector<std::string> &content) {
   return std::make_pair(longest_start, longest_end);
 }
 
-// TODO: Finish this part of the code 
-
 std::string longest_common_substring(const std::string &str1,
                                      const std::string &str2) {
-  int m = str1.length();
-  int n = str2.length();
-  std::string longest_substring = "";
+  int len1 = str1.length();
+  int len2 = str2.length();
+  std::string longest_substr = "";
 
-  for (int i = 0; i < m; i++) {
-    for (int j = 0; j < n; j++) {
-      int k = 0;
-      while (i + k < m && j + k < n && str1[i + k] == str2[j + k]) {
-        k++;
+  for (int i = 0; i < len1; i++) {
+    for (int j = 0; j < len2; j++) {
+      int match_length = 0;
+      while (i + match_length < len1 && j + match_length < len2 &&
+             str1[i + match_length] == str2[j + match_length]) {
+        match_length++;
       }
-      if (k > longest_substring.length()) {
-        longest_substring = str1.substr(i, k);
+      if (match_length > longest_substr.length()) {
+        longest_substr = str1.substr(i, match_length);
       }
     }
   }
 
-  return longest_substring;
+  return longest_substr;
 }
 
 std::string find_longest_common_substring_in_files(const std::string &file1,
