@@ -16,6 +16,16 @@ bool is_palindrome(std::string word) { // Two pointers approach
   return true;
 }
 
+std::vector<std::string> read_file_lines(const std::string &filename) {
+  std::ifstream file(filename);
+  std::vector<std::string> lines;
+  std::string line;
+  while (std::getline(file, line)) {
+    lines.push_back(line);
+  }
+  return lines;
+}
+
 std::vector<std::string> read_file(std::string file_name) {
   std::ifstream file;
   file.open(file_name);
@@ -67,37 +77,6 @@ std::string split(std::string word, int l, int r) {
   return result;
 }
 
-std::vector<std::string>
-find_all_palindromes(const std::vector<std::string> &content) {
-  std::vector<std::string> palindromes;
-
-  for (const std::string &word : content) {
-    int word_length = word.length();
-    for (int l = 0; l < word_length; l++) {
-      for (int r = l; r < word_length; r++) {
-        std::string word_in_range = split(word, l, r);
-        if (is_palindrome(word_in_range) && word_in_range.length() > 1) {
-          palindromes.push_back(word_in_range);
-        }
-      }
-    }
-  }
-  return palindromes;
-}
-
-std::string longest_common_palindrome(std::vector<std::string> arr_one,
-                                      std::vector<std::string> arr_two) {
-  std::string lcp = ""; // lcp = longest common palindrome
-  for (std::string elem_one : arr_one) {
-    for (std::string elem_two : arr_two) {
-      if ((elem_one == elem_two) && (elem_one.length() > lcp.length())) {
-        lcp = elem_one;
-      }
-    }
-  }
-  return lcp;
-}
-
 std::pair<int, int>
 longest_palindrome(const std::vector<std::string> &content) {
   std::string longest_pal = "";
@@ -121,6 +100,48 @@ longest_palindrome(const std::vector<std::string> &content) {
     total_length += word_length + 1;
   }
   return std::make_pair(longest_start, longest_end);
+}
+
+// TODO: Finish this part of the code 
+
+std::string longest_common_substring(const std::string &str1,
+                                     const std::string &str2) {
+  int m = str1.length();
+  int n = str2.length();
+  std::string longest_substring = "";
+
+  for (int i = 0; i < m; i++) {
+    for (int j = 0; j < n; j++) {
+      int k = 0;
+      while (i + k < m && j + k < n && str1[i + k] == str2[j + k]) {
+        k++;
+      }
+      if (k > longest_substring.length()) {
+        longest_substring = str1.substr(i, k);
+      }
+    }
+  }
+
+  return longest_substring;
+}
+
+std::string find_longest_common_substring_in_files(const std::string &file1,
+                                                   const std::string &file2) {
+  std::vector<std::string> lines1 = read_file_lines(file1);
+  std::vector<std::string> lines2 = read_file_lines(file2);
+
+  std::string longest_substring;
+
+  for (const std::string &line1 : lines1) {
+    for (const std::string &line2 : lines2) {
+      std::string common = longest_common_substring(line1, line2);
+      if (common.length() > longest_substring.length()) {
+        longest_substring = common;
+      }
+    }
+  }
+
+  return longest_substring;
 }
 
 int main() {
@@ -149,13 +170,9 @@ int main() {
             << ", End index: " << result_two.second << std::endl;
 
   std::cout << "PART 3" << std::endl;
-  std::vector<std::string> transmission_one_palindromes =
-      find_all_palindromes(transmission_one);
-  std::vector<std::string> transmission_two_palindromes =
-      find_all_palindromes(transmission_two);
+  std::string lcs = find_longest_common_substring_in_files("transmission1.txt",
+                                                           "transmission2.txt");
 
-  std::string lcp = longest_common_palindrome(transmission_one_palindromes,
-                                              transmission_two_palindromes);
-  std::cout << "The longest common palindrome within these two files is: "
-            << lcp << std::endl;
+  std::cout << "The longest common substring is: " << lcs << std::endl;
+  std::cout << "Its length is: " << lcs.length() << std::endl;
 }
