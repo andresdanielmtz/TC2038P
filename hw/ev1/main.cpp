@@ -4,9 +4,9 @@
  * @brief evidencia 1, Análisis de Algoritmos Avanzados
  * @version 0.1
  * @date 2024-09-26
- * 
+ *
  * @copyright Copyright (c) 2024
- * 
+ *
  */
 
 #include <fstream>
@@ -58,20 +58,22 @@ bool in_word(std::string substr, std::string str) {
 void is_substrs_in_str(std::vector<std::string> str_vector,
                        std::vector<std::string> words) {
 
-  bool checker = false;
   for (std::string word : words) {
+    bool checker = false; 
     for (std::string str : str_vector) {
-      if (in_word(word, str)) {
+      if (str.find(word) != std::string::npos) {  
         checker = true;
+        break;  
       }
     }
-    if (checker == true) {
+    if (checker) {
       std::cout << "True\t" << word << std::endl;
     } else {
       std::cout << "False\t" << word << std::endl;
     }
   }
 }
+
 
 void print_vector(std::vector<std::string> vec) {
   for (std::string elem : vec) {
