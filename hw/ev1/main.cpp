@@ -1,3 +1,14 @@
+/**
+ * @file main.cpp
+ * @author Andrés Martínez (A00227463@tec.mx)
+ * @brief evidencia 1, Análisis de Algoritmos Avanzados
+ * @version 0.1
+ * @date 2024-09-26
+ * 
+ * @copyright Copyright (c) 2024
+ * 
+ */
+
 #include <fstream>
 #include <iostream>
 #include <string>
