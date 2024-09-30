@@ -7,3 +7,5 @@ Para ejecutar cualquier archivo usa el siguiente comando:
 ```
 g++ -std=c++17 your_file.cpp -o your_program
 ```
+
+*Nota extra*: Algunas soluciones utilizan features encontradas en versiones posteriores a C++11. Por terminos de compatibilidad y para evitar errores de compilación, se recomienda agregar la flag `-std=c++17` a la hora de compilarlo.
