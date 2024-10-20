@@ -13,9 +13,6 @@ def maxSubarray(arr):
             currSum = currSum + arr[j]
           
             # Update res if currSum is greater than res
-            
-            # if currSum > res -> res = currSum 
-            
             res = max(res, currSum)
           
     return res
