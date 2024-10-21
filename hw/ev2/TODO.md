@@ -3,5 +3,6 @@
 
 - Floyd Warshall Algorithm 
 - Travelling Salesman
+    - Held-Karp Algorithm, a DP approach to TSP
 - Longest path between two nodes 
 - Coords? Possibly geometry? 

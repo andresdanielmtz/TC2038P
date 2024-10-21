@@ -1,96 +1,114 @@
 #include <iostream>
-#include <utility>
 #include <vector>
+#include <limits>
+#include <algorithm>
+#include <fstream>
 
+const int INF = std::numeric_limits<int>::max();
 
-void addEdge(std::vector<std::pair<int, int> > adj[], int u, int v, int wt) {
-  for (const auto &edge : adj[u]) {
-    if (edge.first == v && edge.second == wt) {
-      return; // If edge already exists, don't add it again : )
-    }
-  }
-  adj[u].push_back(std::make_pair(v, wt));
-  adj[v].push_back(std::make_pair(u, wt));
+void addEdge(std::vector<std::vector<int>>& graph, int u, int v, int wt) {
+    graph[u][v] = wt;
+    graph[v][u] = wt;
 }
 
-/**
- * @brief https://www.geeksforgeeks.org/floyd-warshall-algorithm-dp-16/
- * 
- * @param V 
- * @return std::vector<std::vector<int> > 
- */
+std::vector<std::vector<int>> floyd_warshall(const std::vector<std::vector<int>>& graph) {
+    int V = graph.size();
+    std::vector<std::vector<int>> dist = graph;
 
-std::vector<std::vector<int> > floyd_warshall(std::vector<std::pair<int, int> >adj[], int V) {
-    std::vector<std::vector<int> > dist(V, std::vector<int>(V, INT_MAX));
-
-    for (int i = 0; i < V; i++) {
-        dist[i][i] = 0; // Distance from a vertex to itself is 0
-        for (const auto& edge : adj[i]) {
-            int j = edge.first;
-            int weight = edge.second;
-            dist[i][j] = weight;
-        }
-    }
-
-    // Floyd-Warshall algorithm
     for (int k = 0; k < V; k++) {
         for (int i = 0; i < V; i++) {
             for (int j = 0; j < V; j++) {
-                if (dist[i][k] != INT_MAX && dist[k][j] != INT_MAX &&
+                if (dist[i][k] != INF && dist[k][j] != INF &&
                     dist[i][k] + dist[k][j] < dist[i][j]) {
                     dist[i][j] = dist[i][k] + dist[k][j];
                 }
             }
         }
     }
-
     return dist;
 }
 
-void printGraph(std::vector<std::pair<int, int> > adj[], int V) {
-  int v, w;
-  for (int u = 0; u < V; u++) {
-    std::cout << u << "\n";
-    for (auto it = adj[u].begin(); it != adj[u].end(); it++) {
-      v = it->first;
-      w = it->second;
-      std::cout << v << ", w: \t" << w << "\n";
+/**
+ * @brief This function solves the Traveling Salesman Problem using a greedy algorithm. It uses the nearest neighbor heuristic to find an approximate solution.
+ * 
+ * @param graph 
+ * @return std::vector<int> 
+ */
+std::vector<int> traveling_salesman(const std::vector<std::vector<int>>& graph) {
+    int n = graph.size();
+    std::vector<int> tour;
+    std::vector<bool> visited(n, false);
+    
+    tour.push_back(0);  // Start from the first city
+    visited[0] = true;
+
+    for (int i = 1; i < n; i++) {
+        int last = tour.back();
+        int next = -1;
+        int min_dist = INF;
+
+        for (int j = 0; j < n; j++) {
+            if (!visited[j] && graph[last][j] != INF && graph[last][j] < min_dist) {
+                next = j;
+                min_dist = graph[last][j];
+            }
+        }
+
+        if (next == -1) {
+
+            break;
+        }
+
+        tour.push_back(next);
+        visited[next] = true;
     }
-    std::cout << "\n";
-  }
+    tour.push_back(0);
+
+    return tour;
+}
+
+int calculate_tour_length(const std::vector<int>& tour, const std::vector<std::vector<int>>& graph) {
+    int length = 0;
+    for (size_t i = 0; i < tour.size() - 1; i++) {
+        length += graph[tour[i]][tour[i + 1]];
+    }
+    return length;
 }
 
 int main() {
-  int V;
-  std::cin >> V;
-  std::vector<std::pair<int, int> > adj[V];
-
-  // Input parsing for adjacency matrix, through stdin (standard input)
-
-  for (int i = 0; i < V; ++i) {
-    for (int j = 0; j < V; ++j) {
-      int wt;
-      std::cin >> wt;
-      if (wt != 0) {
-        addEdge(adj, i, j, wt);
-      }
+    std::ifstream input_file("in.txt");
+    if (!input_file.is_open()) {
+        std::cerr << "Error opening input file" << std::endl;
+        return 1;
     }
-  }
 
-  printGraph(adj, V);
+    int V;
+    input_file >> V;
 
+    std::vector<std::vector<int>> graph(V, std::vector<int>(V, INF));
 
-  std::vector<std::vector<int> > dist = floyd_warshall(adj, V);
-  for (int i = 0; i < V; i++) {
-      for (int j = 0; j < V; j++) {
-          if (dist[i][j] == INT_MAX) {
-              std::cout << "INF ";
-          } else {
-              std::cout << dist[i][j] << " ";
-          }
-      }
-      std::cout << "\n";
-  }
+    for (int i = 0; i < V; i++) {
+        for (int j = 0; j < V; j++) {
+            int weight;
+            input_file >> weight;
+            if (weight != 0) {
+                addEdge(graph, i, j, weight);
+            }
+        }
+        graph[i][i] = 0;  // Distance to self is 0
+    }
 
-  return 0;
+    input_file.close();
+
+    // Traveling Salesman Problem
+    std::vector<int> tour = traveling_salesman(graph);
+    int tour_length = calculate_tour_length(tour, graph);
+
+    std::cout << "\nOptimal cabling route (TSP solution):" << std::endl;
+    for (int city : tour) {
+        std::cout << city << " ";
+    }
+    std::cout << "\nTotal cable length: " << tour_length << " km" << std::endl;
+
+    return 0;
 }
