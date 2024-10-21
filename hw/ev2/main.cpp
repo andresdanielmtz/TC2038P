@@ -8,6 +8,8 @@
 
 const int INF = std::numeric_limits<int>::max();
 
+
+
 void addEdge(std::vector<std::vector<int> > &graph, int u, int v, int wt) {
   graph[u][v] = wt;
   graph[v][u] = wt;
@@ -132,7 +134,7 @@ traveling_salesman(const std::vector<std::vector<int> > &graph) {
 }
 
 int calculate_tour_length(const std::vector<int> &tour,
-                          const std::vector<std::vector<int>> &graph) {
+                          const std::vector<std::vector<int> > &graph) {
   int length = 0;
   for (size_t i = 0; i < tour.size() - 1; i++) {
     length += graph[tour[i]][tour[i + 1]];
@@ -149,7 +151,7 @@ int main() {
 
   int V;
   input_file >> V;
-  std::vector<std::vector<int>> graph(V, std::vector<int>(V, INF));
+  std::vector<std::vector<int> > graph(V, std::vector<int>(V, INF));
 
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < V; j++) {
@@ -162,7 +164,7 @@ int main() {
     graph[i][i] = 0;
   }
 
-  std::vector<std::vector<int>> capacity_graph(V, std::vector<int>(V, 0));
+  std::vector<std::vector<int> > capacity_graph(V, std::vector<int>(V, 0));
   for (int i = 0; i < V; i++) {
     for (int j = 0; j < V; j++) {
       input_file >> capacity_graph[i][j];
@@ -195,7 +197,7 @@ int main() {
   int source = 0;   
   int sink = V - 1; // Sink -> Last node (colony)
   int max_flow = fordFulkerson(capacity_graph, source, sink);
-  std::cout << "\nProblem 3: Maximum flow from node A to node (Ford-Fulkerson Algorithm)"
+  std::cout << "\nProblem 3: Maximum flow from node A to node (Ford-Fulkerson Algorithm) "
             << static_cast<char>('A' + sink) << ": " << max_flow << std::endl;
 
   return 0;
